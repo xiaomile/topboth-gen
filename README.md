@@ -1,4 +1,4 @@
-# Image Server MCP
+﻿# Image Server MCP
 
 MCP (Model Context Protocol) 服务，用于连接外部AI客户端与图片生成后端服务。
 
@@ -51,7 +51,7 @@ uv add mcp httpx python-dotenv cryptography
 ```json
 {
   "mcpServers": {
-    "topb-media": {
+    "topboth-gen": {
       "command": "uv",
       "args": [
         "run",
@@ -76,7 +76,7 @@ uv add mcp httpx python-dotenv cryptography
 ```json
 {
   "mcpServers": {
-    "topb-media": {
+    "topboth-gen": {
       "command": "uv",
       "args": [
         "run",
