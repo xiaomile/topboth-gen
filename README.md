@@ -139,13 +139,6 @@ uv add mcp httpx python-dotenv cryptography
 - 图片：['file:///path/to/image.png']
 ```
 
-### 支持的工具
-
-| 工具名 | 功能 |
-|--------|------|
-| `burgeon_generate_image` | Burgeon文生图/图生图 |
-| `agnes_generate_image` | Agnes文生图/图生图 |
-
 ## 支持的图片格式
 
 MCP服务器支持以下图片输入格式：
