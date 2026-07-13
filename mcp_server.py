@@ -158,7 +158,7 @@ async def list_tools() -> list[Tool]:
                     "model": {"type": "string", "enum": ["agnes-image-2.1-flash"], "default": "agnes-image-2.1-flash", "description": "模型名称，默认agnes-image-2.1-flash"},
                     "modelgroup": {"type": "string", "enum": ["agnes"], "default": "agnes", "description": "模型组，默认agnes"},
                     "aspect_ratio": {"type": "string", "enum": ["16:9", "1:1", "3:4"], "default": "1:1", "description": "宽高比，如'16:9', '1:1', '3:4'，默认1:1"},
-                    "image_size": {"type": "string", "enum": ["1K", "2K"], "default": "1K", "description": "图片尺寸，默认1K"},
+                    "image_size": {"type": "string", "enum": ["1K"], "default": "1K", "description": "图片尺寸，只能是1K"},
                     "n": {"type": "integer", "default": 1, "description": "生成图片数量，默认1"},
                     "images": {"type": "array", "items": {"type": "string"}, "description": "输入图片的URL或本地文件路径列表（支持多张图片），用于image-to-image模式，例如：['https://example.com/img1.png', 'file:///path/to/img2.png']"},
                 },
