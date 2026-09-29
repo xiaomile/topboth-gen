@@ -4,7 +4,7 @@ MCP Server for image_server.py
 
 统一入口调用，隐藏内部业务接口。
 对外暴露工具：
-  - burgeon_generate_image / agnes_generate_image : 文生图 / 图生图
+  - topboth_generate_image / test_generate_image : 文生图 / 图生图
   - server_status                                  : 自检，排查各客户端的接入问题
 
 多客户端兼容说明（Trae / Qoder / WorkBuddy / Claude 等）：
@@ -44,7 +44,7 @@ from mcp.server.stdio import stdio_server
 from mcp.types import ImageContent, TextContent, Tool
 
 SERVER_NAME = "image-server-mcp"
-SERVER_VERSION = "2.1.0"
+SERVER_VERSION = "2.2.0"
 
 # --------------------------------------------------------------------------- #
 # 基础设施
@@ -88,8 +88,8 @@ try:
 except ValueError:
     HTTP_TIMEOUT = 300.0
 
-BUERGEON_MODEL = "burgeon-gpt-image-2"
-AGNES_MODEL = "agnes-image-2.1-flash"
+BUERGEON_MODEL = "拓全智能图片V2"
+AGNES_MODEL = "agnes-image-2.5-flash"
 
 # 生成图片落盘时识别扩展名用的魔数
 _MAGIC_MIME = (
@@ -581,9 +581,9 @@ OUTPUT_SCHEMA = {
 async def list_tools() -> list[Tool]:
     return [
         Tool(
-            name="burgeon_generate_image",
+            name="topboth_generate_image",
             description=(
-                "使用 Burgeon API 生成图片。支持文生图和图生图。"
+                "使用 拓全模型 API 生成图片。支持文生图和图生图。"
                 "图生图时提供 images 参数（URL、本地路径或 base64 均可）。"
                 "生成结果会同时保存到本地，并在返回的 JSON 中给出 local_path。"
             ),
@@ -599,7 +599,7 @@ async def list_tools() -> list[Tool]:
                     },
                     "model": {
                         "type": "string",
-                        "enum": ["burgeon-gpt-image-2"],
+                        "enum": ["拓全智能图片V2"],
                         "default": BUERGEON_MODEL,
                         "description": "模型名称",
                     },
@@ -633,9 +633,9 @@ async def list_tools() -> list[Tool]:
             },
         ),
         Tool(
-            name="agnes_generate_image",
+            name="test_generate_image",
             description=(
-                "使用 Agnes API 生成图片。支持文生图和图生图。"
+                "使用 测试模型 API 生成图片。支持文生图和图生图。"
                 "图生图时提供 images 参数（URL、本地路径或 base64 均可）。"
                 "生成结果会同时保存到本地，并在返回的 JSON 中给出 local_path。"
             ),
@@ -651,7 +651,7 @@ async def list_tools() -> list[Tool]:
                     },
                     "model": {
                         "type": "string",
-                        "enum": ["agnes-image-2.1-flash"],
+                        "enum": ["agnes-image-2.5-flash"],
                         "default": AGNES_MODEL,
                         "description": "模型名称",
                     },
@@ -756,8 +756,8 @@ async def execute_tool(name: str, arguments: Any) -> tuple[list, bool]:
             }
             return [TextContent(type="text", text=json.dumps(info, ensure_ascii=False, indent=2))], False
 
-        if name in ("burgeon_generate_image", "agnes_generate_image"):
-            is_burgeon = name == "burgeon_generate_image"
+        if name in ("topboth_generate_image", "test_generate_image"):
+            is_topboth = name == "topboth_generate_image"
 
             image_config: dict[str, Any] = {
                 "aspectRatio": arguments.get("aspect_ratio") or "1:1",
@@ -792,8 +792,8 @@ async def execute_tool(name: str, arguments: Any) -> tuple[list, bool]:
             data = {
                 "mode": arguments.get("mode") or ("image-to-image" if images_data else "text-to-image"),
                 "prompt": arguments.get("prompt"),
-                "model": arguments.get("model") or (BUERGEON_MODEL if is_burgeon else AGNES_MODEL),
-                "modelgroup": arguments.get("modelgroup") or ("burgeon" if is_burgeon else "agnes"),
+                "model": arguments.get("model") or (BUERGEON_MODEL if is_topboth else AGNES_MODEL),
+                "modelgroup": arguments.get("modelgroup") or ("burgeon" if is_topboth else "agnes"),
                 "config": config,
                 "images": images_data,
                 "n": arguments.get("n", 1) or 1,
@@ -805,7 +805,7 @@ async def execute_tool(name: str, arguments: Any) -> tuple[list, bool]:
                 result = {"error": "后端返回格式异常", "details": str(result)[:2000]}
             if image_errors:
                 result.setdefault("image_errors", []).extend(image_errors)
-            await harvest_images(result, arguments, "burgeon" if is_burgeon else "agnes")
+            await harvest_images(result, arguments, "burgeon" if is_topboth else "agnes")
         else:
             result = {"error": f"Unknown tool: {name}"}
 

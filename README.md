@@ -4,7 +4,7 @@ MCP (Model Context Protocol) 服务，用于连接外部 AI 客户端与图片�
 
 ## 功能
 
-- **文生图**: 使用 Burgeon 和 Agnes API 生成图片
+- **文生图**: 使用 拓全模型 API 和 测试模型 API 生成图片
 - **图生图**: 支持上传图片进行风格转换、图片编辑和图片融合
 - **结果落盘**: 生成的图片会自动保存到本地，并在返回结果中给出 `local_path`（WorkBuddy 等 Agent 客户端可直接作为产物交付）
 - **自检工具**: `server_status` 用于快速排查接入问题
@@ -161,8 +161,8 @@ WorkBuddy 不会向 MCP 进程注入工作目录（`cwd` 不生效），因此**
 （Qoder、WorkBuddy）用 `uv run --directory <项目目录> mcp_server.py`。
 
 WorkBuddy 上传图片的用法：把图片拖进对话后，直接说「用这张图做图生图，调用
-agnes_generate_image」即可，Agent 会把上传后得到的本地路径传给 `images` 参数；
-也可以自己把路径写清楚，例如「调用 burgeon_generate_image，images 传
+测试模型 生成图片」即可，Agent 会把上传后得到的本地路径传给 `images` 参数；
+也可以自己把路径写清楚，例如「调用 测试模型 生成图片，images 传
 `C:/Users/me/AppData/Local/Temp/xxx.png`」。详见下方「图生图」小节。
 
 ## 使用方法
@@ -178,7 +178,7 @@ agnes_generate_image」即可，Agent 会把上传后得到的本地路径传给
 或者明确指定参数：
 
 ```
-调用 burgeon_generate_image 工具，参数：
+调用 拓全模型 生成图片，参数：
 - 提示词：生成一张赛博朋克风格的城市夜景
 - 宽高比：16:9
 - 尺寸：1K
@@ -196,7 +196,7 @@ agnes_generate_image」即可，Agent 会把上传后得到的本地路径传给
 也可以显式把图片路径传给工具（推荐，最稳定）：
 
 ```
-调用 agnes_generate_image 工具进行图生图：
+调用 测试模型 生成图片，参数：
 - 提示词：将图片转换为梵高风格油画
 - 模式：image-to-image
 - 图片：['file:///path/to/image.png']
