@@ -69,23 +69,23 @@ async def run(server_path: str) -> int:
             tools = await session.list_tools()
             names = [t.name for t in tools.tools]
             print(f"[ok] tools: {names}")
-            assert "burgeon_generate_image" in names and "agnes_generate_image" in names
+            assert "topboth_generate_image" in names and "test_generate_image" in names
 
             result = await session.call_tool("server_status", {})
             print("[ok] server_status:", result.content[0].text.replace("\n", " ")[:160])
 
             # 1) 不存在的路径 -> 必须返回明确错误，而不是把路径当 base64 蒙混过关
-            body = await call(session, "agnes_generate_image", {"prompt": "smoke", "image_path": "C:/definitely/not/exist.png"})
+            body = await call(session, "test_generate_image", {"prompt": "smoke", "image_path": "C:/definitely/not/exist.png"})
             assert is_image_parse_error(body), f"预期图片解析失败: {body}"
             print("[ok] 不存在的路径:", body["details"][0])
 
             # 2) JSON 字符串形式的数组，同样要能识别
-            body = await call(session, "burgeon_generate_image", {"prompt": "smoke", "images": '["C:/definitely/not/exist.png"]'})
+            body = await call(session, "topboth_generate_image", {"prompt": "smoke", "images": '["C:/definitely/not/exist.png"]'})
             assert is_image_parse_error(body), f"预期图片解析失败: {body}"
             print("[ok] JSON 字符串数组: 已解析为 1 个路径")
 
             # 3) 真实存在的本地文件：应通过解析、直接打到（不可达的）后端
-            body = await call(session, "agnes_generate_image", {"prompt": "smoke", "image_path": str(png_path)})
+            body = await call(session, "test_generate_image", {"prompt": "smoke", "image_path": str(png_path)})
             assert not is_image_parse_error(body), f"本地图片应能读取: {body}"
             assert body.get("error"), "后端不可达时应返回错误"
             print("[ok] 本地绝对路径: 图片已读取并发出请求 ->", body["error"])
@@ -93,7 +93,7 @@ async def run(server_path: str) -> int:
             # 4) file:/// 形式（WorkBuddy/IDE 常见的引用方式）
             body = await call(
                 session,
-                "agnes_generate_image",
+                "test_generate_image",
                 {"prompt": "smoke", "images": [f"file:///{png_path.as_posix().lstrip('/')}"]},
             )
             assert not is_image_parse_error(body), f"file:// 形式应能读取: {body}"
@@ -102,7 +102,7 @@ async def run(server_path: str) -> int:
             # 5) base64 data URI
             body = await call(
                 session,
-                "agnes_generate_image",
+                "test_generate_image",
                 {"prompt": "smoke", "images": ["data:image/png;base64," + base64.b64encode(PNG).decode()]},
             )
             assert not is_image_parse_error(body), f"data URI 应能读取: {body}"
